@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        {% if user.is_authenticated %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.content }}
+                    <div class="text-end mt-2">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">ツイートする</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="list-group">
+            {% for post in posts %}
+            <div class="list-group-item post-card p-3">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">
+                        <a href="{% url 'profile' post.user.username %}" class="text-decoration-none text-dark fw-bold">
+                            {{ post.user.username }}
+                        </a>
+                        <small class="text-muted fw-light ms-2">@{{ post.user.username }} · {{ post.created_at|date:"n月j日" }}</small>
+                    </h6>
+                </div>
+                <p class="mb-2 mt-1">{{ post.content|linebreaksbr }}</p>
+                <div class="d-flex gap-3 mt-2">
+                    <a href="{% url 'like_post' post.id %}" class="text-decoration-none text-muted d-flex align-items-center gap-1">
+                        {% if post.id in liked_post_ids %}
+                            <i class="bi bi-heart-fill text-danger"></i>
+                        {% else %}
+                            <i class="bi bi-heart"></i>
+                        {% endif %}
+                        <span class="small">{{ post.likes_count }}</span>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="list-group-item p-5 text-center text-muted">
+                <i class="bi bi-chat-square-dots display-4 mb-3 d-block"></i>
+                まだ投稿がありません。最初の投稿をしてみましょう！
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
